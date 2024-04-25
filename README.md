@@ -1,1 +1,1 @@
-# Online.Retailer.Project
+This is a SQL project
