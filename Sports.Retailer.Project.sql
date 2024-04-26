@@ -54,7 +54,7 @@ ORDER BY last_visited
 -- The table shows that there is approximately five times more Adidas products than Nike products and that Nike products have a higher rating. 
 SELECT brand, 
        COUNT(*) AS count_products,
-	   ROUND(AVG(rating), 2) AS average_rating
+       ROUND(AVG(rating), 2) AS average_rating
 FROM brands b
 JOIN info i
 ON b.product_id = i.product_id
@@ -74,9 +74,9 @@ GROUP BY brand
 -- The final table shows that Adidas has sold more products than Nike and collected more revenue. Also, we see that Nike has nearly double the average sale price of Adidas. 
 SELECT brand, 
        COUNT(*) AS number_of_products_sold,
-	   SUM(sale_price) AS sum_revenue,
+       SUM(sale_price) AS sum_revenue,
        MIN(sale_price) AS min_sale_price, 
-	   MAX(sale_price) AS max_sale_price,  
+       MAX(sale_price) AS max_sale_price,  
        ROUND(AVG(sale_price), 2) AS avg_sale_price
 FROM transactions t
 JOIN brands b
@@ -93,15 +93,15 @@ GROUP BY brand
 -- The data shows that Adidas products have made nearly 75% of the total revenue. 
 SELECT
 	CONCAT(ROUND((SELECT SUM(sale_price) 
-	 			  FROM transactions t 
-	 		      JOIN brands b
+	 	      FROM transactions t 
+	 	      JOIN brands b
 	              ON t.product_id = b.product_id 
 	              WHERE brand = 'Adidas')
 	/SUM(sale_price)*100, 2), '%') AS adidas_portion_revenue,
 	
 	CONCAT(ROUND((SELECT SUM(sale_price) 
-	 			  FROM transactions t 
-	 		      JOIN brands b
+	 	      FROM transactions t 
+	 	      JOIN brands b
 	              ON t.product_id = b.product_id 
 	              WHERE brand = 'Nike')
 	/SUM(sale_price)*100, 2), '%') AS nike_portion_revenue
@@ -137,8 +137,8 @@ LIMIT 10
 SELECT brand, 
        product_name, 
        SUM(sale_price) as revenue, 
-	   CONCAT(ROUND(SUM(sale_price)/(SELECT SUM(sale_price) as revenue
-								     FROM transactions t                            
+       CONCAT(ROUND(SUM(sale_price)/(SELECT SUM(sale_price) as revenue
+				     FROM transactions t                            
                                      JOIN brands b
                                      ON t.product_id = b.product_id
                                      WHERE brand = 'Nike')*100, 2), '%') AS portion_of_revenue														
@@ -171,7 +171,7 @@ ON t.product_id = r.product_id
 -- Since we can't use an aggregate function within the CORR function, we need a CTE (common table expression).
 WITH CTE AS 
 (
-	SELECT product_id, COUNT(product_id) as total_sales
+    SELECT product_id, COUNT(product_id) as total_sales
     FROM transactions
     GROUP BY product_id
 )
@@ -195,7 +195,7 @@ SELECT brand,
 		WHEN 2 <= rating AND rating < 3 THEN 'Mediocre rating'
 		WHEN 3 <= rating AND rating < 4 THEN 'Good rating'
 		ELSE 'Excellent rating'
-	END AS rating_category,
+	        END AS rating_category,
 	COUNT(DISTINCT t.product_id) AS number_of_products,
 	COUNT(*) AS number_of_products_sold,    
 	SUM(sale_price) AS total_revenue
@@ -253,8 +253,8 @@ ORDER BY description_length
 SELECT COUNT(i1.product_id) AS men_products_count, i2.women_products_count
 FROM info i1
 CROSS JOIN (SELECT COUNT(product_id) AS women_products_count
-			FROM info 
-			WHERE LOWER(product_name) LIKE '%women%') i2
+	    FROM info 
+	    WHERE LOWER(product_name) LIKE '%women%') i2
 WHERE LOWER(product_name) LIKE '%men%'
 GROUP BY i2.women_products_count
 
@@ -274,10 +274,10 @@ WHERE LOWER(product_name) LIKE '%slipper%' OR LOWER(product_name) LIKE '%sandal%
 -- We must use the SUM function and join info and transactions tables together.
 -- This shows that approximately 68% of the total revenue is from shoe sales. 
 SELECT CONCAT(ROUND((SELECT SUM(sale_price) AS revenue_shoes
-		FROM info i
-        JOIN transactions t
-        ON i.product_id = t.product_id
-        WHERE LOWER(product_name) LIKE '%shoes%') / SUM(sale_price)*100, 2), '%') AS shoe_products_revenue_portion
+	             FROM info i
+                     JOIN transactions t
+                     ON i.product_id = t.product_id
+                     WHERE LOWER(product_name) LIKE '%shoes%') / SUM(sale_price)*100, 2), '%') AS shoe_products_revenue_portion
 FROM transactions
 	
 			
@@ -337,7 +337,7 @@ GROUP BY brand, sale_price, count
 -- I used a GROUP BY statement for month and year columns. I also sorted the table by year and month respectively. 
 SELECT DATE_PART('month', date) AS month, 
        DATE_PART('year', date) AS year, 
-	   SUM(sale_price) AS total_revenue	
+       SUM(sale_price) AS total_revenue	
 FROM transactions
 GROUP BY month, year
 HAVING SUM(sale_price) > 45000
@@ -352,8 +352,8 @@ ORDER BY 2, 3
 -- The month of January in 2019 was the month with the highest total revenue. 
 WITH CTE AS 
 (
-	SELECT DATE_PART('month', date) AS month, DATE_PART('year', date) AS year, SUM(sale_price) AS total_revenue
-	FROM transactions
+    SELECT DATE_PART('month', date) AS month, DATE_PART('year', date) AS year, SUM(sale_price) AS total_revenue
+    FROM transactions
     GROUP BY month, year
     ORDER BY 2, 1
 )
@@ -370,7 +370,7 @@ WHERE total_revenue = (SELECT MAX(total_revenue) FROM CTE)
 -- The get the number of months within each year, I used a COUNT function and added a DISTINCT statement. Without the DISTINCT statement, the result would be incorrect. 
 SELECT DATE_PART('year', date) AS year, 
        SUM(sale_price) AS total_revenue, 
-	   ROUND(SUM(sale_price)/COUNT(DISTINCT DATE_PART('month', date)), 2) AS monthly_average
+       ROUND(SUM(sale_price)/COUNT(DISTINCT DATE_PART('month', date)), 2) AS monthly_average
 FROM transactions
 GROUP BY year
 ORDER BY year
@@ -396,7 +396,7 @@ ORDER BY year
 SELECT brand, 
        DATE_PART('year', date) AS year, 
        SUM(sale_price) AS total_revenue, 
-	   ROUND(SUM(sale_price)/COUNT(DISTINCT DATE_PART('month', date)), 2) AS monthly_average
+       ROUND(SUM(sale_price)/COUNT(DISTINCT DATE_PART('month', date)), 2) AS monthly_average
 FROM transactions t
 JOIN brands b
 ON t.product_id = b.product_id
@@ -408,7 +408,7 @@ UNION
 SELECT brand, 
        DATE_PART('year', date) AS year, 
        SUM(sale_price) AS total_revenue, 
-	   ROUND(SUM(sale_price)/COUNT(DISTINCT DATE_PART('month', date)), 2) AS monthly_average
+       ROUND(SUM(sale_price)/COUNT(DISTINCT DATE_PART('month', date)), 2) AS monthly_average
 FROM transactions t
 JOIN brands b
 ON t.product_id = b.product_id
@@ -429,19 +429,19 @@ ORDER BY brand, year
 SELECT CASE 
        WHEN DATE_PART('month', date) = 1 THEN 'January' 
        WHEN DATE_PART('month', date) = 2 THEN 'February' 
-	   WHEN DATE_PART('month', date) = 3 THEN 'March' 
-	   WHEN DATE_PART('month', date) = 4 THEN 'April' 
-	   WHEN DATE_PART('month', date) = 5 THEN 'May' 
-	   WHEN DATE_PART('month', date) = 6 THEN 'June' 
-	   WHEN DATE_PART('month', date) = 7 THEN 'July' 
+       WHEN DATE_PART('month', date) = 3 THEN 'March' 
+       WHEN DATE_PART('month', date) = 4 THEN 'April' 
+       WHEN DATE_PART('month', date) = 5 THEN 'May' 
+       WHEN DATE_PART('month', date) = 6 THEN 'June' 
+       WHEN DATE_PART('month', date) = 7 THEN 'July' 
        WHEN DATE_PART('month', date) = 8 THEN 'August' 
-	   WHEN DATE_PART('month', date) = 9 THEN 'September' 
-	   WHEN DATE_PART('month', date) = 10 THEN 'October' 
-	   WHEN DATE_PART('month', date) = 11 THEN 'November' 
-	   ELSE 'December' 
-	   END AS month,
+       WHEN DATE_PART('month', date) = 9 THEN 'September' 
+       WHEN DATE_PART('month', date) = 10 THEN 'October' 
+       WHEN DATE_PART('month', date) = 11 THEN 'November' 
+       ELSE 'December' 
+       END AS month,
        
-	   SUM(sale_price) AS total_revenue
+       SUM(sale_price) AS total_revenue
 	   
 FROM transactions t
 WHERE DATE_PART('year', date) <> '2020' 
@@ -457,11 +457,11 @@ ORDER BY 2 DESC
 -- Finally the data is aggregated by season and brand and I sorted total revenue in descending order. 
 SELECT CASE 
        WHEN DATE_PART('month', date) IN (1,2,12)  THEN 'Winter'
-	   WHEN DATE_PART('month', date) IN (3,4,5)  THEN 'Spring' 
-	   WHEN DATE_PART('month', date) IN (6,7,8)  THEN 'Summer' 
-	   WHEN DATE_PART('month', date) IN (9,10,11)  THEN 'Fall' 
+       WHEN DATE_PART('month', date) IN (3,4,5)  THEN 'Spring' 
+       WHEN DATE_PART('month', date) IN (6,7,8)  THEN 'Summer' 
+       WHEN DATE_PART('month', date) IN (9,10,11)  THEN 'Fall' 
        END AS season,
-	   brand, SUM(sale_price) AS total_revenue
+       brand, SUM(sale_price) AS total_revenue
 FROM brands b
 JOIN transactions t
 ON b.product_id = t.product_id
@@ -480,10 +480,10 @@ ORDER by total_revenue DESC
 -- We see that from January to February the company had the biggest decrease in total revenue and from February to March, the company saw the highest increase in total sales.
 -- The table also shows that the total revenue varies more within the first 5 months of the year. 
 SELECT DATE_PART('year', date) AS year, 
-	   DATE_PART('month', date) AS month, 
-	   SUM(sale_price) AS total_monthly_revenue,
-	   SUM(sale_price) - LAG(SUM(sale_price)) OVER() AS total_monthly_revenue_diff, 
-	   CONCAT(ROUND((SUM(sale_price) - LAG(SUM(sale_price)) OVER()) / SUM(sale_price)*100, 2), '%') AS total_monthly_revenue_diff_percentage
+       DATE_PART('month', date) AS month, 
+       SUM(sale_price) AS total_monthly_revenue,
+       SUM(sale_price) - LAG(SUM(sale_price)) OVER() AS total_monthly_revenue_diff, 
+       CONCAT(ROUND((SUM(sale_price) - LAG(SUM(sale_price)) OVER()) / SUM(sale_price)*100, 2), '%') AS total_monthly_revenue_diff_percentage
 FROM transactions 
 WHERE DATE_PART('year', date) = 2019
 GROUP BY month, year 
@@ -499,9 +499,9 @@ ORDER BY 1, 2
 -- The table shows a considerable decrease in daily average revenue in the month of March.
 SELECT DATE_PART('year', date) AS year, 
        DATE_PART('month', date) AS month, 
-	   ROUND(SUM(sale_price)/COUNT(DISTINCT date), 2) AS avg_daily_revenue,
-	   ROUND((SUM(sale_price)/COUNT(DISTINCT date)) - (LAG(SUM(sale_price)/COUNT(DISTINCT date)) OVER ()), 2) AS avg_daily_revenue_diff,
-	   CONCAT(ROUND(((SUM(sale_price)/COUNT(DISTINCT date)) - (LAG(SUM(sale_price)/COUNT(DISTINCT date)) OVER ())) / (SUM(sale_price)/COUNT(DISTINCT date))*100, 2), '%') AS avg_daily_revenue_diff_percentage
+       ROUND(SUM(sale_price)/COUNT(DISTINCT date), 2) AS avg_daily_revenue,
+       ROUND((SUM(sale_price)/COUNT(DISTINCT date)) - (LAG(SUM(sale_price)/COUNT(DISTINCT date)) OVER ()), 2) AS avg_daily_revenue_diff,
+       CONCAT(ROUND(((SUM(sale_price)/COUNT(DISTINCT date)) - (LAG(SUM(sale_price)/COUNT(DISTINCT date)) OVER ())) / (SUM(sale_price)/COUNT(DISTINCT date))*100, 2), '%') AS avg_daily_revenue_diff_percentage
 FROM transactions t
 JOIN brands b
 ON t.product_id = b.product_id
